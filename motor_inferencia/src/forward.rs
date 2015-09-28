@@ -5,6 +5,7 @@ use base_conocimientos;
 
 pub struct ForwardChaining {
     bc : Vec<base_conocimientos::BaseConocimientos>,
+    end : bool,
 }
 
 impl ForwardChaining {
@@ -14,31 +15,54 @@ impl ForwardChaining {
                 Ok(bc) => bc,
                 Err(s) => return Err(s),
             }],
+            end : false,
         };
 
         Ok(fc)
     }
 
     pub fn next(&mut self) {
+        if self.has_ended() {
+            return;
+        }
+
         let mut bc_new = base_conocimientos::BaseConocimientos::from(self.bc.last().unwrap());
+        let mut has_triggered = false;
 
         // XXX: esto es un asco
-        for v in &bc_new.rules {
-            if v.is_triggered() {
+        for rule in bc_new.rules.iter_mut() {
+            if rule.is_triggered() {
                 continue;
             }
 
-            if(v.trigger(&bc_new.variables)){
-                for r in v.result {
-                    bc_new.variables.push(r);
+            if rule.trigger(&bc_new.variables) {
+                has_triggered = true;
+                for result in rule.result.iter() {
+                    match bc_new.variables.iter().position(|var| var == result){
+                        None => bc_new.variables.push(result.clone()),
+                        _ => {},
+                    };
                 }
+
+                break;
             }
         }
 
-        self.bc.push(bc_new);
+        if has_triggered {
+            self.bc.push(bc_new);
+        } else {
+            self.end = true;
+        }
     }
 
-    pub fn prev(&self) {
+    pub fn prev(&mut self) {
+        // Ignoramos las cosas malas
+        match self.bc.len() {
+            1 => {},
+            _ => match self.bc.pop() {
+                _ => {},
+            },
+        };
     }
 
     pub fn print(&self){
@@ -46,5 +70,9 @@ impl ForwardChaining {
             Some(b) => b.to_string(),
             None => "".to_string(),
         });
+    }
+
+    pub fn has_ended(&self) -> bool {
+        self.end
     }
 }

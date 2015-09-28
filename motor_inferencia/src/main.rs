@@ -4,6 +4,7 @@ extern crate getopts;
 use std::env;
 use getopts::Options;
 use std::io;
+use std::io::Write;
 
 mod base_conocimientos;
 mod forward;
@@ -11,30 +12,37 @@ mod forward;
 
 fn do_backward(inp: &str){
     // Aca tenes que implementar el back
-
+    println!("file.. {}", inp);
 }
 
 fn do_forward(inp: &str){
-    let f = match forward::ForwardChaining::new(inp) {
+    let mut f = match forward::ForwardChaining::new(inp) {
         Err(e) => panic!("Error: {}", e),
         Ok(f) => f,
     };
 
-    println!("Opciones:\n\ts: siguiente paso\n\ta: anterior paso\n\tp: imprimir informacion\n\te: salir");
+    println!("Opciones:\n\ts: siguiente paso\n\ta: anterior paso\n\tp: imprimir informacion\n\tq: salir");
 
     loop {
+        print!(" => ");
+        io::stdout().flush().ok().expect("Error flushing");
         let mut opt = String::new();
         io::stdin().read_line(&mut opt)
             .ok()
             .expect("Error leyendo opcion");
 
         match opt.trim() {
-            "s" => f.next(),
+            "s" => {
+                f.next();
+                if f.has_ended() {
+                    println!("Fin");
+                }
+            },
             "a" => f.prev(),
             "p" => f.print(),
-            "e" => break,
-            _ => {
-                println!("'{}' : opcion invalida", opt);
+            "q" => break,
+            n => {
+                println!("'{}' : opcion invalida", n);
                 continue;
             },
         };

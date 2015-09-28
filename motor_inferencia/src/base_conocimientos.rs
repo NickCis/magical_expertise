@@ -21,7 +21,7 @@ impl Rule {
         };
 
         let syntax_regex = Regex::new(r"^\s*si\s*(.*?),\s*entonces\s*(.*?)$").unwrap();
-        if(!syntax_regex.is_match(line)){
+        if !syntax_regex.is_match(line) {
             return Err("Sintaxis de regla invalida");
         }
 
@@ -31,7 +31,7 @@ impl Rule {
         let cond_regex = Regex::new(r"([^\s]*)\s*y?").unwrap();
         for cap in cond_regex.captures_iter(captures.at(1).unwrap_or("")){
             let cond = String::from(cap.at(1).unwrap_or(""));
-            if(! cond.is_empty()){
+            if !cond.is_empty() {
                 r.condition.push(cond);
             }
         }
@@ -45,7 +45,7 @@ impl Rule {
 
     pub fn trigger(&mut self, variables : &Vec<String>) -> bool{
         for v in &self.condition {
-            match variables.iter().position(|&r| r == v) {
+            match variables.iter().position(|r| r.to_string() == v.to_string()) {
                 None => return false,
                 _ => {}
             };
@@ -60,12 +60,17 @@ impl Rule {
     }
 
     pub fn to_string(&self) -> String {
-        [
+        let mut ret = [
             "si".to_string(),
             self.condition.join(" y "),
             ", entonces".to_string(),
             self.result.join(" ")
-        ].join(" ")
+        ].join(" ");
+        if self.is_triggered() {
+            ret = format!("[ {} ]", ret);
+        }
+
+        return ret;
     }
 }
 
