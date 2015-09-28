@@ -1,3 +1,5 @@
+import re
+
 class Rule:
     def __init__(self, premisas, conclusion):
         self.premisas = premisas
@@ -51,6 +53,16 @@ class Hipotesis:
             continue
         return False
 
+
+#esto deberia estar en un regex pero no me salio, no such fucking group
+def parsePremisas(s):
+    v = []
+    for char in s:
+        if not (char == 'y' or char == '\t' or char == ' ' or char == '\n'):
+            v.append(char)
+    return v
+
+
 def backtrack(baseConocimiento,conocimientoAcertado):
     for h in hipotesis:
         print "verificando hipotesis : %s" % h
@@ -73,15 +85,22 @@ def backtrack(baseConocimiento,conocimientoAcertado):
                     backtrack(baseConocimiento,conocimientoAcertado)
 
 
+def loadRules():
+    filename =  raw_input('Ingrese el nombre de la base de conocimiento: ')
+    rules = []
+    with open(filename) as f:
+        for line in f:
+            searchObj = re.search(r"^\s*si\s*(.*?),\s*entonces\s*(.*?)$",line)
+            premisas = parsePremisas(searchObj.group(1))
+            conclusion = searchObj.group(2)
+            rules.append(Rule(premisas,conclusion))
+    return rules
 
+
+rules = loadRules()
+print rules
 baseConocimiento = ["p","q","r"]
 conocimientoAcertado = []
-r1 = Rule(["p","q"] , "s")
-r2 = Rule(["r"] , "t")
-r3 = Rule(["s","t"] , "u")
-r4 = Rule(["s","r"] , "v")
-rules = [r1,r2,r3,r4]
-
 
 h1 = Hipotesis("v")
 hipotesis = [h1]
