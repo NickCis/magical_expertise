@@ -73,6 +73,9 @@ si q y r, entonces s
 ```
 
 ## Ejemplo de ejecucion
+
+### Forward chaining
+
 Archivo de base de conocimiento:
 
 ```
@@ -169,4 +172,83 @@ v
  => s
 Fin
 => q
+```
+
+### Backward chaining
+
+Base de conocimientos:
+```
+$ cat caso.bc
+# Reglas
+si p y q, entonces s
+si r, entonces t
+si s y t, entonces u
+si s y r, entonces v
+
+# Conocimiento
+p
+q
+r
+```
+
+Ejecucion:
+```
+$ ./target/debug/motor_inferencia -b caso.bc
+Archivo de entrada: caso.bc
+Introduce hipotesis => v
+Opciones:
+        s: siguiente paso
+        a: anterior paso
+        p: imprimir informacion
+        q: salir
+ => p
+Reglas
+si p y q , entonces s
+si r , entonces t
+si s y t , entonces u
+si s y r , entonces v
+Conocimiento
+p
+q
+r
+Hipotesis: v
+ => s
+ => p
+Reglas
+si p y q , entonces s
+si r , entonces t
+si s y t , entonces u
+si s y r , entonces v
+Conocimiento
+p
+q
+r
+Hipotesis: s
+ => s
+ => p
+Reglas
+[ si p y q , entonces s ]
+si r , entonces t
+si s y t , entonces u
+si s y r , entonces v
+Conocimiento
+p
+q
+r
+s
+Hipotesis: v
+ => s
+Fin
+ => p
+Reglas
+[ si p y q , entonces s ]
+si r , entonces t
+si s y t , entonces u
+[ si s y r , entonces v ]
+Conocimiento
+p
+q
+r
+s
+v
 ```

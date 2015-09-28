@@ -44,6 +44,10 @@ impl Rule {
     }
 
     pub fn trigger(&mut self, variables : &Vec<String>) -> bool{
+        if self.is_triggered() {
+            return self.is_triggered();
+        }
+
         for v in &self.condition {
             match variables.iter().position(|r| r.to_string() == v.to_string()) {
                 None => return false,
@@ -57,6 +61,15 @@ impl Rule {
     fn is_rule(line: &String) -> bool {
         let rule_regex = Regex::new(r"^\s*si[^,]*,\s*entonces").unwrap();
         return rule_regex.is_match(line);
+    }
+
+    pub fn includes(&self, hipotesis: &String) -> bool {
+        match self.result.iter().position( |r| { r.to_string() == hipotesis.to_string() }) {
+            None => return false,
+            _ => {}
+        };
+
+        return true;
     }
 
     pub fn to_string(&self) -> String {

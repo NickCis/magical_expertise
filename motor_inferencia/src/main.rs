@@ -8,11 +8,50 @@ use std::io::Write;
 
 mod base_conocimientos;
 mod forward;
+mod backward;
 
 
 fn do_backward(inp: &str){
     // Aca tenes que implementar el back
-    println!("file.. {}", inp);
+
+    print!("Introduce hipotesis => ");
+    io::stdout().flush().ok().expect("Error flushing");
+    let mut hipotesis_inicial = String::new();
+    io::stdin().read_line(&mut hipotesis_inicial)
+        .ok()
+        .expect("Error leyendo opcion");
+
+    let mut b = match backward::BackwardChaining::new(inp, hipotesis_inicial.trim()) {
+        Err(e) => panic!("Error: {}", e),
+        Ok(b) => b,
+    };
+
+    println!("Opciones:\n\ts: siguiente paso\n\ta: anterior paso\n\tp: imprimir informacion\n\tq: salir");
+
+    loop {
+        print!(" => ");
+        io::stdout().flush().ok().expect("Error flushing");
+        let mut opt = String::new();
+        io::stdin().read_line(&mut opt)
+            .ok()
+            .expect("Error leyendo opcion");
+
+        match opt.trim() {
+            "s" => {
+                b.next();
+                if b.has_ended() {
+                    println!("Fin");
+                }
+            },
+            "a" => b.prev(),
+            "p" => b.print(),
+            "q" => break,
+            n => {
+                println!("'{}' : opcion invalida", n);
+                continue;
+            },
+        };
+    }
 }
 
 fn do_forward(inp: &str){
