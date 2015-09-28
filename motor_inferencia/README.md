@@ -45,6 +45,32 @@ Se debe escribir una regla o un conocimiento por linea.
 
 Se ignoran las lineas vacias o las que comiencen con el caracter numeral `#`.
 
+### Limitaciones
+
+Para facilitar la tarea de parseo del archivo, solo se permite que las reglas tengan condiciones logicas unidas con `y`, es decir, `and`. Realmente, esto no es una limitacion, ya que la codicion logica de `o` (`or`) se puede conseguir generando un conjunto de reglas.
+
+Por ejemplo:
+Una regla con `o` se podria descomponer en dos reglas:
+```
+si p o q, entonces s
+```
+Se reemplazaria por el conjunto de reglas:
+```
+si p, entonces s
+si q entonces s
+```
+
+Tampoco se permiten las condiciones anidadas ya que estas tambien se podrian escribirse mediante el uso de varias reglas.
+
+Ejemplo:
+```
+si (p o q) y r, entonces s
+```
+Se reemplazaria por el siguiente conjunto de reglas:
+```
+si p y r, entonces s
+si q y r, entonces s
+```
 
 ## Ejemplo de ejecucion
 Archivo de base de conocimiento:
