@@ -16,6 +16,11 @@ class Net:
         '''Normaliza el nombre de las cosas'''
         return name.strip().lower()
 
+    def gethNode(self, name):
+        '''Devuelve el nodo cuyo nombre es name o None si no existe'''
+        normName = self.normalizeName(name)
+        return self.nodes[normName] if normName in self.nodes else None
+
     def searchNode(self, name):
         '''Busca un nodo por el nombre y lo devuelve. Si no existe, lo crea'''
         normName = self.normalizeName(name)
@@ -25,6 +30,8 @@ class Net:
         return self.nodes[normName]
 
     def addRule(self, rule):
+        '''Agrega una regla a la red. Genera nodos y establece las relaciones
+        entre los mismos'''
         padre = ''
         hijos = []
 
@@ -34,6 +41,9 @@ class Net:
         else:
             padre = rule.objetos[0]
             hijos.append(rule.objetos[1])
+
+        for h in hijos:
+            self.searchNode(h)
 
         node = self.searchNode(padre)
         node.addRelation(Relation(rule.name, hijos))
@@ -66,6 +76,7 @@ class Node:
         self.relations = []
 
     def addRelation(self, rel):
+        '''Agrega una relacion al nodo'''
         self.relations.append(rel)
 
     def toString(self):

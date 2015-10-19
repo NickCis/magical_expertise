@@ -1,4 +1,5 @@
 #! /usr/bin/env python
+import sys
 import os.path
 import argparse
 
@@ -33,6 +34,11 @@ def parse_arguments():
         action='store_true',
         help="Modo debug"
     )
+    parser.add_argument(
+        "-i", "--interactive",
+        action='store_true',
+        help="Modo interactivo."
+    )
     parser.parse_args()
     return parser.parse_args()
 
@@ -44,7 +50,27 @@ def main():
 
     net = Net.fromRules(rules)
 
-    print(net.toString())
+    if args.interactive:
+        print("Presione enter para listar los nodos.")
+        print("Escriba el nombre del nodo para ver las relaciones.")
+        print("Escriba 'exit' para salir.")
+        while True:
+            line = input(" > ")
+            if line == "exit":
+                break
+            elif line == "":
+                for key, node in net.nodes.items():
+                    print(node.name)
+            else:
+                nodo = net.gethNode(line)
+                if not nodo:
+                    print("El nodo no existe")
+                    continue
+                print(nodo.name)
+                for rel in nodo.relations:
+                    print("|-- %s --> %s" % (rel.name, ", ".join(rel.nodes)))
+    else:
+        print(net.toString())
 
 if __name__ == "__main__":
     exit(main())
