@@ -1,88 +1,80 @@
-
-class Rule:
-    def __init__(self,relacion,objetos):
-        self.relacion = relacion
-        self.objetos = objetos
-
-    def __repr__(self):
-        aux = ""
-        aux += self.relacion
-        aux += "->"
-        aux += ''.join(self.objetos)
-        return aux;
-
-    def match(self,rule):
-        for objeto in rule.objetos:
-            if objeto in self.objetos:
-                return True
-        return False
-
-class Node:
-
-    #un nodo tiene una relacion para con el padre
-    #e.g perro es un mamifero
-    def __init__(self,objeto,padre,relacion):
-        self.objeto = objeto
-        self.padre = padre
-        self.relacion = relacion
-        self.children = []
-
+import re
 
 class Net:
+    def __init__(self):
+        self.nodes = {}
 
-    def __init__(self,objeto):
-        self.root = Node(objeto,None,None)
-    #Evalua si se encuentra el nodo con el nombro objeto
-    #returns el nodo con ese objeto
+    @staticmethod
+    def fromRules(rules):
+        net = Net()
+        for rule in rules:
+            net.addRule(rule)
 
-    def contains(self,objeto,nodo=None):
-        if nodo is None:
-            nodo = self.root
+        return net
 
-        if nodo is None:
-            return None
+    def searchNode(self, name):
+        '''Busca un nodo por el nombre y lo devuelve. Si no existe, lo crea'''
+        if not name in self.nodes:
+            self.nodes[name] = Node(name)
 
-        if nodo.objeto == objeto:
-            return nodo
+        return self.nodes[name]
+
+    def addRule(self, rule):
+        padre = ''
+        hijos = []
+
+        if len(rule.objetos) == 3:
+            padre = rule.objetos[1]
+            hijos = [rule.objetos[0], rule.objetos[2]]
         else:
-            for nodo in nodo.children:
-                contains(objeto,nodo)
+            padre = rule.objetos[0]
+            hijos.append(rule.objetos[1])
 
-    def addNodo(nodoPadre, nodoHijo):
-        nodoPadre.children.append(nodoHijo)
+        node = self.searchNode(padre)
+        node.addRelation(Relation(rule.name, hijos))
+
+    def toString(self):
+        str = "digraph Red {\n"
+
+        for key, value in self.nodes.items():
+            str += value.toString()
+
+        str += '}'
+
+        return str
+
+    def __repr__(self):
+        return self.toString()
+
+class Relation:
+    '''Representa una relacion, como es direccional, solo guarda el nombre de la relacion y los nodos destino (hijos). La relacion va a estar guardada por el nodo inicio (padre), entonces no se guarda ese nodo en la relacion'''
+
+    def __init__(self, name, nodes):
+        self.name = name
+        self.nodes = nodes
+
+class Node:
+    '''Representa un Nodo, cada nodo puede tener muchas relaciones. Las relaciones son dirigidas el nodo inicio (padre) es el que las guarda'''
+
+    def __init__(self, name):
+        self.name = name
+        self.relations = []
+
+    def addRelation(self, rel):
+        self.relations.append(rel)
+
+    def toString(self):
+        def nameToDot(name):
+            return "node%s" % re.sub(r'\s', '_', name)
+
+        lines = [
+            "%s [label=\"%s\"]" % (nameToDot(self.name), self.name)
+        ]
+        for rel in self.relations:
+            for n in rel.nodes:
+                lines.append("%s [label=\"%s\"]" % (nameToDot(n), n))
+                lines.append("%s -> %s [label=\"%s\"]" % (nameToDot(self.name), nameToDot(n), rel.name))
+
+        return "".join(["\t%s\n" % x for x in lines])
 
 
-def buildNet(rules):
-    net = Net(rules[0].objetos[1])
-    for rule in rules:
-        for objeto in rule.objetos:
-            print(objeto)
-            nodoHijo = net.contains(objeto)
-            print(nodoHijo)
-            if not nodoHijo is None:
-                if net.contains(objeto):
-                    #se esta repitiendo
-                    pass
-                else:
-                    net.addNodo(Node(objeto[1],None,rule.relacion))
-                    print("agrego")
-            nodoPadre = net.contains(objeto[1])
-            #seguir
-
-
-
-
-def loadRules():
-    from parser import loadRules
-
-    rules = loadRules("conocimiento")
-    return rules
-
-def main():
-    rules = loadRules()
-    net = buildNet(rules)
-
-
-if __name__ == "__main__":
-	main()
-	
