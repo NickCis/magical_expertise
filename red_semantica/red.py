@@ -12,12 +12,17 @@ class Net:
 
         return net
 
+    def normalizeName(self, name):
+        '''Normaliza el nombre de las cosas'''
+        return name.strip().lower()
+
     def searchNode(self, name):
         '''Busca un nodo por el nombre y lo devuelve. Si no existe, lo crea'''
-        if not name in self.nodes:
-            self.nodes[name] = Node(name)
+        normName = self.normalizeName(name)
+        if not normName in self.nodes:
+            self.nodes[normName] = Node(name)
 
-        return self.nodes[name]
+        return self.nodes[normName]
 
     def addRule(self, rule):
         padre = ''

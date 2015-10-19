@@ -3,19 +3,21 @@ import re
 class Rule:
     def __init__(self, name, objetos):
         self.name = name
-        self.objetos = objetos
+        self.objetos = [x for x in objetos]
 
     @staticmethod
     def fromString(line):
         '''Crea la regla apartir de la representacion de texto'''
         rule = None
-        searchObj = re.search(r'(^\w+)\((\w.*)\)', line)
-        relacion = searchObj.group(1)
-        objetos = [x.strip() for x in searchObj.group(2).split(',')]
+        match = re.search(r'^([^(]+)\(([^)]+)\)', line)
+        if not match:
+            raise SyntaxError("Sintaxis de regla invalida")
+
+        relacion = match.group(1).strip()
+        objetos = [x.strip() for x in match.group(2).split(',')]
         if len(objetos) <= 3:
             rule = Rule(relacion, objetos)
-        else:
-            # no se aceptan mas de 3 objetos en una regla
+        else: # no se aceptan mas de 3 objetos en una regla
             raise ValueError("La regla no puede tener mas de 3 argumentos")
 
         return rule
@@ -30,12 +32,7 @@ class Rule:
         return rules
 
     def __repr__(self):
-        aux = ""
-        aux += self.name
-        aux += "("
-        aux += ', '.join(self.objetos)
-        aux += ')'
-        return aux;
+        return "%s(%s)" % (self.name, ', '.join(self.objetos))
 
     def match(self, rule):
         for objeto in rule.objetos:
