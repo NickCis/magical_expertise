@@ -65,15 +65,43 @@ class Node:
 
     def toString(self):
         def nameToDot(name):
-            return "node%s" % re.sub(r'\s', '_', name)
+            return ("node%s" % re.sub(r'\s', '_', name)).lower()
+
+        def relNameToDot(rel):
+            str = "rel%s" % nameToDot(rel.name)
+            for n in rel.nodes:
+                str += nameToDot(n)
+            return str
 
         lines = [
             "%s [label=\"%s\"]" % (nameToDot(self.name), self.name)
         ]
         for rel in self.relations:
-            for n in rel.nodes:
-                lines.append("%s [label=\"%s\"]" % (nameToDot(n), n))
-                lines.append("%s -> %s [label=\"%s\"]" % (nameToDot(self.name), nameToDot(n), rel.name))
+            lines.append("%s [label=\"%s\"]" % (
+                nameToDot(rel.nodes[0]),
+                rel.nodes[0]
+            ))
+            if len(rel.nodes) > 1:
+                relName = relNameToDot(rel)
+                lines.append("%s [label=\"%s\",shape=box]" % (
+                    relName,
+                    rel.name
+                ))
+                lines.append("%s -> %s" % (
+                    nameToDot(self.name),
+                    relName
+                ))
+                for n in rel.nodes:
+                    lines.append("%s -> %s" % (
+                        relName,
+                        nameToDot(n)
+                    ))
+            else:
+                lines.append("%s -> %s [label=\"%s\"]" % (
+                    nameToDot(self.name),
+                    nameToDot(rel.nodes[0]),
+                    rel.name
+                ))
 
         return "".join(["\t%s\n" % x for x in lines])
 

@@ -32,7 +32,7 @@ Esta carpeta contiene la red semantica desarrollada en python.
 
 ### Sintaxis de la base de conocimiento
 
-En `red_semantica/conocimiento` hay un ejemplo de la sintaxis.
+En `red_semantica/conocimiento` hay un ejemplo de la sintaxis. **Los nombres son case insensitive!.**
 
 Basicamente se utiliza `nombre_relacion(nodos ...)`. La cantidad de nodos puede ser como maximo 3. Siendo la m&aacute;s comun 2.
 
