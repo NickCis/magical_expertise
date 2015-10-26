@@ -1,0 +1,5 @@
+name: Distribucion 1
+parent: Distribucion
+data:
+  - Lugar: Local 3, Sala 123
+  - Participantes: Sr. Adam, Sr. Braun, Sr. Schmidt

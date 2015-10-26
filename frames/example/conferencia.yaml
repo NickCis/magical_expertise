@@ -1,0 +1,6 @@
+name: Conferencia
+data:
+  - Fecha
+  - Lugar
+  - Tema
+  - Participantes
