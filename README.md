@@ -39,3 +39,83 @@ Basicamente se utiliza `nombre_relacion(nodos ...)`. La cantidad de nodos puede 
 Cuando hay solo dos nodos, se toma el primero como el nodo inicial, es decir el padre.
 
 Cuando hay 3, se toma el nodo del medio como el padre.
+
+## Frames
+
+Esta carpeta contiene una implementacion de frames. Requiere tener instalado el paquete `yaml`.
+
+    $ python -m frames -h
+    usage: frames [-h] [-d] [-s [SEARCH]] [conocimiento]
+    
+    Creador de frames. Importa la carpeta de frames especificados, los imprime.
+    
+    positional arguments:
+      conocimiento          Carpeta de base de conocimiento
+    
+    optional arguments:
+      -h, --help            show this help message and exit
+      -d, --debug           Modo debug
+      -s [SEARCH], --search [SEARCH]
+                            Importa este frame y busca con cual frame matchea
+    
+    $ python -m frames frames/example/
+    ----
+    Distribucion 1
+    Lugar: Local 3, Sala 123
+    Participantes: Sr. Adam, Sr. Braun, Sr. Schmidt
+    Fecha: 21 Marzo 1986 10.00
+    Tema: Distribucion
+    ----
+    Desarrollo
+    Fecha: 21 Marzo 1986 10.00
+    Tema: Desarrollo
+    Lugar:
+    Participantes:
+    ----
+    Distribucion
+    Fecha: 21 Marzo 1986 10.00
+    Tema: Distribucion
+    Lugar:
+    Participantes:
+    ----
+    Conferencia
+    Fecha:
+    Lugar:
+    Tema:
+    Participantes:
+    
+    $ python -m frames -s frames/search.yaml frames/example/
+    > frames/search.yaml
+    ----
+    Search
+    Fecha: 21 Marzo 1986 10.00
+    Tema: Distribucion
+    > Resultado:
+    ----
+    Distribucion 1
+    Lugar: Local 3, Sala 123
+    Participantes: Sr. Adam, Sr. Braun, Sr. Schmidt
+    Fecha: 21 Marzo 1986 10.00
+    Tema: Distribucion
+    ----
+    Distribucion
+    Fecha: 21 Marzo 1986 10.00
+    Tema: Distribucion
+    Lugar:
+    Participantes:
+
+### Sintaxis de los frames
+
+Se utilizo la sintaxis `yaml` para la construccion de un frame. Para especificar uno en un archivo debe contener los siguientes tags:
+
+* `name`: nombre del frame
+* `parent`: nombre del frame padre *(opcional)*
+* `data`: todos los datos del frame
+
+#### Ejemplo
+
+    name: Distribucion
+    parent: Conferencia
+    data:
+      - Fecha: 21 Marzo 1986 10.00
+      - Tema: Distribucion

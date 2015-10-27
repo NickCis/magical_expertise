@@ -44,11 +44,25 @@ def main():
     set = FrameSet(args.conocimiento)
     set.importAll()
 
-    if args.debug:
+    if args.debug or not args.search:
         print(set)
+        print()
 
     if args.search:
-        print("search", args.search)
+        print(">", args.search)
+        input_frame = Frame.fromFile(args.search)
+        print(input_frame)
+        print("> Resultado:")
+
+        for frame in set.frames.values():
+            match = True
+            for col in input_frame.getColumns():
+                if input_frame.getValue(col) != frame.getValue(col):
+                    match = False
+                    break
+
+            if match:
+                print(frame)
 
 if __name__ == "__main__":
     exit(main())

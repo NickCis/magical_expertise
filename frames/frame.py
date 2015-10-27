@@ -1,4 +1,5 @@
-import re
+import os.path
+import yaml
 
 class Frame:
     def __init__(self, name):
@@ -52,4 +53,15 @@ class Frame:
 
     def __repr__(self):
         return self.toString()
+
+    @staticmethod
+    def fromFile(path):
+        with open(path) as file:
+            return Frame.fromData(yaml.load(file))
+
+    @staticmethod
+    def fromData(data):
+        frame = Frame(data["name"])
+        frame.setValues(data["data"])
+        return frame
 

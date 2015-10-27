@@ -10,36 +10,39 @@ class FrameSet:
         self.frames = {}
         self.todo = {}
 
-    def importFile(self, data):
+    def importFile(self, path):
+        with open(path) as file:
+            return self.importData(yaml.load(file))
+
+    def importData(self, data):
         if "parent" in data and not data["parent"] in self.frames:
             self.todo[data["name"]] = data
-            return
+            return None
 
-        self.frames[data["name"]] = Frame(data["name"])
+        self.frames[data["name"]] = Frame.fromData(data)
         if "parent" in data:
             self.frames[data["name"]].setParent(self.frames[data["parent"]])
 
-        self.frames[data["name"]].setValues(data["data"])
-
         if data["name"] in self.todo:
             self.todo.pop(data["name"])
+
+        return self.frames[data["name"]]
 
     def importAll(self):
         files = os.listdir(self.folder)
         for name in files:
             if name.startswith("."):
                 continue
-            with open(os.path.join(self.folder, name)) as file:
-                self.importFile(yaml.load(file))
+            self.importFile(os.path.join(self.folder, name))
 
         end = 50
         while len(self.todo):
             end -= 1
             if end <= 0:
-                raise SyntaxError("No se resuelven nunca las dependencias de los padres!")
+                raise RuntimeError("No se resuelven nunca las dependencias de los padres!")
 
-            for k, v in self.todo.items():
-                self.importFile(v)
+            for v in [x for x in self.todo.values()]:
+                self.importData(v)
 
 
     def toString(self):
