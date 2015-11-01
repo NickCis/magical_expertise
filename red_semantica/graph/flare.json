@@ -1,0 +1,51 @@
+{
+	"name": "sangre caliente",
+	"children": [
+		{
+			"name": "mamifero",
+			"children": [
+				{
+					"name": "perro",
+					"children": [
+						{
+							"name": "Belo",
+							"children": [
+								{"name": "casa de maria", "size": 2000},
+								{"name": "60 cm", "size": 2000},
+								{"name": "blanco", "size": 2000}
+							]
+						},
+						{
+							"name": "Tino",
+							"children": [
+								{
+									"name": "Bomberos",
+									"children": [
+										{"name": "casa de maria", "size": 1500},
+										{"name": "casa de kurt", "size": 1500}
+									]
+								},
+
+								{"name": "40 cm", "size": 3416},
+								{"name": "blanco", "size": 3416}
+							]
+						}
+					]
+				},
+				{
+					"name": "gato",
+					"children": [
+						{
+							"name": "Susi",
+							"children": [
+								{"name": "Casa de kurt", "size": 3416},
+								{"name": "20 cm", "size": 3416},
+								{"name": "susi", "size": 3416}
+							]
+						}
+					]
+				}
+			]
+		}
+	]
+}
